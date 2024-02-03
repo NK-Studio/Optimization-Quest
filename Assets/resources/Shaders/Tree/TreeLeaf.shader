@@ -2,11 +2,6 @@ Shader "Custom URP/TreeLeaf"
 {
     Properties
     {
-        [Header(Leaf Shaking)]
-        _ShakeStrength("Strength", Float) = 1.0
-        _ShakeScatter("Scatter", Float) = 1.0
-        _ShakeSpeed("Speed", Float) = 1.0
-        
         // Specular vs Metallic workflow
         _WorkflowMode("WorkflowMode", Float) = 1.0
 
@@ -18,9 +13,9 @@ Shader "Custom URP/TreeLeaf"
 
         _Metallic("Metallic", Range(0.0, 1.0)) = 0.0
         _MetallicGlossMap("Metallic", 2D) = "white" {}
-        
+
         _Cutoff ("Alpha Clipping", Range(0.0, 1.0)) = 0.5
-        
+
         _AlphaMap("Alpha Map", 2D) = "black" {}
         _AlphaCutout("Alpha Cutout", Range(0.0, 1.0)) = 0.0
 
@@ -80,6 +75,11 @@ Shader "Custom URP/TreeLeaf"
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
+
+        // Custom Properties
+        _ShakeStrength("Strength", Float) = 1.0
+        _ShakeScatter("Scatter", Float) = 1.0
+        _ShakeSpeed("Speed", Float) = 1.0
     }
 
     SubShader
@@ -87,7 +87,10 @@ Shader "Custom URP/TreeLeaf"
         // Universal Pipeline tag is required. If Universal render pipeline is not set in the graphics settings
         // this Subshader will fail. One can add a subshader below or fallback to Standard built-in to make this
         // material work with both Universal Render Pipeline and Builtin Unity Pipeline
-        Tags { "LightMode" = "UniversalForward" }
+        Tags
+        {
+            "LightMode" = "UniversalForward"
+        }
         LOD 300
 
         // ------------------------------------------------------------------
@@ -171,7 +174,7 @@ Shader "Custom URP/TreeLeaf"
             #pragma instancing_options renderinglayer
             // #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "TreeLitInput.hlsl"
             #include "TreeLeafPass.hlsl"
             ENDHLSL
         }
@@ -221,8 +224,8 @@ Shader "Custom URP/TreeLeaf"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
-            #include "TreeLeafShadowCasterPass.hlsl"
+            #include "TreeLitInput.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
 
@@ -303,7 +306,7 @@ Shader "Custom URP/TreeLeaf"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "TreeLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitGBufferPass.hlsl"
             ENDHLSL
         }
@@ -346,7 +349,7 @@ Shader "Custom URP/TreeLeaf"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "TreeLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
             ENDHLSL
         }
@@ -396,7 +399,7 @@ Shader "Custom URP/TreeLeaf"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "TreeLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
             ENDHLSL
         }
@@ -435,13 +438,12 @@ Shader "Custom URP/TreeLeaf"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "TreeLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitMetaPass.hlsl"
-
             ENDHLSL
         }
     }
 
     FallBack "Hidden/Universal Render Pipeline/FallbackError"
-//    CustomEditor "UnityEditor.Rendering.Universal.ShaderGUI.LitShader"
+    CustomEditor "UnityEditor.Rendering.Universal.ShaderGUI.LeafLitShader"
 }

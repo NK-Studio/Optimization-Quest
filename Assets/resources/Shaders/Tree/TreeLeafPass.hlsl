@@ -1,7 +1,6 @@
 #ifndef UNIVERSAL_FORWARD_LIT_PASS_INCLUDED
 #define UNIVERSAL_FORWARD_LIT_PASS_INCLUDED
 
-#include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
@@ -15,14 +14,6 @@
 #if (defined(_NORMALMAP) || (defined(_PARALLAXMAP) && !defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR))) || defined(_DETAIL)
 #define REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR
 #endif
-
-TEXTURE2D(_AlphaMap);
-SAMPLER(sampler_AlphaMap);
-half _AlphaCutout;
-
-float _ShakeStrength; // 흔들리는 강도
-float _ShakeScatter;  // 얼마나 산발적으로 흔들릴 것인지?
-float _ShakeSpeed;    // 흔들리는 속도
 
 // keep this file in sync with LitGBufferPass.hlsl
 
@@ -245,11 +236,10 @@ void LitPassFragment(
 #ifdef _DBUFFER
     ApplyDecalToSurfaceData(input.positionCS, surfaceData, inputData);
 #endif
-
-    half alpha = SAMPLE_TEXTURE2D(_AlphaMap, sampler_AlphaMap, input.uv).x;
+    
     half4 color = UniversalFragmentPBR(inputData, surfaceData);
-    color.rgb = MixFog(color.rgb, inputData.fogCoord) * alpha;
-    color.a = OutputAlpha(alpha, IsSurfaceTypeTransparent(_Surface));
+    color.rgb = MixFog(color.rgb, inputData.fogCoord) * color.a;
+    color.a = OutputAlpha(color.a, IsSurfaceTypeTransparent(_Surface));
 
     outColor = color;
 
